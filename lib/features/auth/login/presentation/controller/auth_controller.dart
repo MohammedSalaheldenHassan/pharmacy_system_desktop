@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pharmacy_system/core/constant/default_admin.dart';
@@ -79,6 +81,20 @@ class AuthController extends GetxController {
     }
   }
 
+  /// How long the whole login attempt (DB seed + credential check) may
+  /// take before we give up and show an error instead of spinning
+  /// forever. A real local SQLite call should take milliseconds; this is
+  /// only a safety net for a genuinely stuck native call (e.g. a missing
+  /// sqlite3 library on the target machine).
+  static const _loginTimeout = Duration(seconds: 10);
+
+  /// Every step here can throw — most importantly, opening the database
+  /// itself, if the platform has no usable native sqlite3 library
+  /// available (see `sqlite3_flutter_libs` in pubspec.yaml). Without this
+  /// try/catch/finally, that exception would propagate out of `login()`
+  /// uncaught: `isLoading` would stay `true` forever (an infinite-looking
+  /// spinner) and nothing would ever tell the user — or whoever's
+  /// debugging it — what actually went wrong.
   Future<void> login() async {
     errorMessage.value = '';
 
@@ -87,9 +103,25 @@ class AuthController extends GetxController {
     }
 
     isLoading.value = true;
+    try {
+      await _attemptLogin().timeout(_loginTimeout);
+    } on TimeoutException {
+      debugPrint('[AuthController.login] timed out after $_loginTimeout — '
+          'likely the local database never opened (missing/mismatched native sqlite3 library?).');
+      errorMessage.value = 'تعذر الاتصال بقاعدة البيانات المحلية (انتهت المهلة). '
+          'تأكد من تثبيت التطبيق بشكل صحيح ثم أعد المحاولة.';
+    } catch (error, stackTrace) {
+      debugPrint('[AuthController.login] failed: $error\n$stackTrace');
+      errorMessage.value = 'حدث خطأ غير متوقع أثناء تسجيل الدخول (${error.runtimeType}). '
+          'إذا تكرر ذلك، يرجى إبلاغ الدعم الفني.';
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> _attemptLogin() async {
     await _ensureEmployeesSeeded();
     await Future.delayed(const Duration(milliseconds: 500));
-    isLoading.value = false;
 
     final enteredUsername = username?.text.trim() ?? '';
     final enteredPassword = password?.text ?? '';

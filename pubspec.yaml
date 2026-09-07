@@ -44,6 +44,12 @@ dependencies:
   # Windows/macOS desktop (plain sqflite is mobile-only).
   sqflite_common_ffi: ^2.3.4+4
   sqflite: ^2.4.1
+  # Bundles the native sqlite3 library for every desktop platform
+  # (including sqlite3.dll for Windows, matched to the build's
+  # architecture automatically) — without this, sqflite_common_ffi has no
+  # sqlite3 library to load on a machine that doesn't already have one
+  # installed system-wide (Linux does; Windows normally doesn't).
+  sqlite3_flutter_libs: ^0.5.24
   path: ^1.9.0
   # Password hashing (SHA-256 + per-user salt) for employee accounts.
   crypto: ^3.0.6

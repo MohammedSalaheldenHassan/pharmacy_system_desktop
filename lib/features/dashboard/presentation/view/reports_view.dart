@@ -91,41 +91,53 @@ class _FiltersBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // A Wrap can't contain a Spacer/Expanded (those only work inside a
+    // Flex), so the wrapping filters and the export button are two
+    // separate children of an outer Row instead — the filters group still
+    // wraps to a new line on a narrow window, and the button stays
+    // pinned to the end whenever there's room.
     return Obx(
-      () => Wrap(
-        spacing: 12,
-        runSpacing: 12,
-        crossAxisAlignment: WrapCrossAlignment.center,
+      () => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (controller.usesDateRange)
-            OutlinedButton.icon(
-              onPressed: () => _pickDateRange(context),
-              style: OutlinedButton.styleFrom(
-                backgroundColor: Colors.white,
-                side: BorderSide(color: Colors.grey.shade300),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-              icon: const Icon(Icons.date_range_outlined, size: 18, color: _brandColor),
-              label: Text(
-                controller.dateRange.value == null
-                    ? 'كل الفترات'
-                    : '${_fmt(controller.dateRange.value!.start)} - ${_fmt(controller.dateRange.value!.end)}',
-                style: const TextStyle(fontFamily: 'Cairo'),
-              ),
+          Expanded(
+            child: Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                if (controller.usesDateRange)
+                  OutlinedButton.icon(
+                    onPressed: () => _pickDateRange(context),
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      side: BorderSide(color: Colors.grey.shade300),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                    icon: const Icon(Icons.date_range_outlined, size: 18, color: _brandColor),
+                    label: Text(
+                      controller.dateRange.value == null
+                          ? 'كل الفترات'
+                          : '${_fmt(controller.dateRange.value!.start)} - ${_fmt(controller.dateRange.value!.end)}',
+                      style: const TextStyle(fontFamily: 'Cairo'),
+                    ),
+                  ),
+                if (controller.usesCategory)
+                  _Dropdown(
+                    value: controller.categoryFilter.value,
+                    items: controller.categoryOptions,
+                    onChanged: controller.selectCategory,
+                  ),
+                if (controller.usesEmployee)
+                  _Dropdown(
+                    value: controller.employeeFilter.value,
+                    items: controller.employeeOptions,
+                    onChanged: controller.selectEmployee,
+                  ),
+              ],
             ),
-          if (controller.usesCategory)
-            _Dropdown(
-              value: controller.categoryFilter.value,
-              items: controller.categoryOptions,
-              onChanged: controller.selectCategory,
-            ),
-          if (controller.usesEmployee)
-            _Dropdown(
-              value: controller.employeeFilter.value,
-              items: controller.employeeOptions,
-              onChanged: controller.selectEmployee,
-            ),
-          const Spacer(),
+          ),
+          const SizedBox(width: 12),
           OutlinedButton.icon(
             // TODO: export real PDF/Excel when backend is ready.
             onPressed: () => Get.snackbar(
