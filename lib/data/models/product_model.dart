@@ -21,7 +21,10 @@ extension ProductStatusLabel on ProductStatus {
   }
 }
 
-const int lowStockThreshold = 20;
+/// Fallback used only where a Settings-aware threshold isn't available.
+/// Everywhere reachable from a real screen should use [statusFor] with the
+/// live `SettingsModel.lowStockThreshold` instead of this constant.
+const int defaultLowStockThreshold = 20;
 
 class ProductModel {
   final String id;
@@ -50,12 +53,19 @@ class ProductModel {
   /// simply as "price".
   double get price => sellingPrice;
 
-  ProductStatus get status {
+  /// Status computed against the real, Settings-configurable low-stock
+  /// threshold. Every screen showing a live status should call this
+  /// (typically via `ProductsController.lowStockThreshold`).
+  ProductStatus statusFor(int lowStockThreshold) {
     if (expiryDate.isBefore(DateTime.now())) return ProductStatus.expired;
     if (stock <= 0) return ProductStatus.outOfStock;
     if (stock < lowStockThreshold) return ProductStatus.lowStock;
     return ProductStatus.available;
   }
+
+  /// Convenience getter for contexts with no Settings access (falls back
+  /// to [defaultLowStockThreshold]). Prefer [statusFor] where possible.
+  ProductStatus get status => statusFor(defaultLowStockThreshold);
 
   ProductModel copyWith({
     String? name,

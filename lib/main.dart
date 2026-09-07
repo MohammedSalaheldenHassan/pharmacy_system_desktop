@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pharmacy_system/core/di/bindings.dart';
 import 'package:pharmacy_system/features/auth/login/presentation/view/login_view.dart';
 
 void main() {
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
       title: 'Pharmacy System',
       theme: ThemeData.light(),
       locale: Locale('ar'),
+      initialBinding: AppBindings(),
       home: LoginView(),
     );
   }

@@ -79,7 +79,7 @@ class _WideLoginCard extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Color(0xff1B4332), Color(0xff386641)],
+                  colors: [Color(0xff1B4332), Color(0xff0e4a35)],
                 ),
               ),
               child: const Padding(

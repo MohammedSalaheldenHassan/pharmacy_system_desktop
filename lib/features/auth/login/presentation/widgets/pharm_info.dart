@@ -27,7 +27,7 @@ class PharmInfo extends StatelessWidget {
                 ? []
                 : [
                     BoxShadow(
-                      color: const Color(0xff386641).withValues(alpha: 0.18),
+                      color: const Color(0xff0e4a35).withValues(alpha: 0.18),
                       offset: const Offset(0, 6),
                       blurRadius: 20,
                     ),
@@ -35,7 +35,7 @@ class PharmInfo extends StatelessWidget {
           ),
           child: Icon(
             Icons.local_hospital_rounded,
-            color: light ? Colors.white : const Color(0xff386641),
+            color: light ? Colors.white : const Color(0xff0e4a35),
             size: logoSize * 0.55,
           ),
         ),

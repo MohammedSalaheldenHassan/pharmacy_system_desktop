@@ -12,7 +12,7 @@ class ChangeLanguage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthController controller = Get.find<AuthController>();
-    final Color fg = light ? Colors.white : const Color(0xff386641);
+    final Color fg = light ? Colors.white : const Color(0xff0e4a35);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6),

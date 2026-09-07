@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pharmacy_system/core/mock/models/employee_model.dart';
+import 'package:pharmacy_system/data/models/employee_model.dart';
 
 class EmployeeStatusBadge extends StatelessWidget {
   const EmployeeStatusBadge({super.key, required this.status});

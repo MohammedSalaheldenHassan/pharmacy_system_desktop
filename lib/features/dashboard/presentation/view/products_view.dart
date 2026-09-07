@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pharmacy_system/core/utils/arabic_plural.dart';
 import 'package:pharmacy_system/features/dashboard/presentation/controller/products_controller.dart';
 import 'package:pharmacy_system/features/dashboard/presentation/widgets/product.dart';
 import 'package:pharmacy_system/features/dashboard/presentation/widgets/product_form_dialog.dart';
@@ -30,7 +31,14 @@ class ProductsView extends StatelessWidget {
                     ),
                     Obx(
                       () => Text(
-                        '${controller.products.length} منتج',
+                        formatArabicCount(
+                          controller.products.length,
+                          zero: 'لا توجد منتجات',
+                          singular: 'منتج واحد',
+                          dual: 'منتجان',
+                          pluralFew: 'منتجات',
+                          pluralMany: 'منتج',
+                        ),
                         style: const TextStyle(color: Colors.grey, fontSize: 14, fontFamily: 'Cairo'),
                       ),
                     ),

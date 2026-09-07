@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pharmacy_system/features/pos/presentation/controller/pos_controller.dart';
 import 'package:pharmacy_system/features/pos/presentation/widgets/cart_list.dart';
+import 'package:pharmacy_system/features/pos/presentation/widgets/payment_dialog.dart';
 
 class CartContainer extends StatelessWidget {
   const CartContainer({super.key});
@@ -86,7 +87,7 @@ class _CartHeader extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(Icons.shopping_cart_outlined, color: Color(0xff386641)),
+            const Icon(Icons.shopping_cart_outlined, color: Color(0xff0e4a35)),
             const SizedBox(width: 6),
             const Text(
               'سلة المشتريات',
@@ -97,7 +98,7 @@ class _CartHeader extends StatelessWidget {
               () => Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                 decoration: BoxDecoration(
-                  color: const Color(0xff386641),
+                  color: const Color(0xff0e4a35),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -174,7 +175,7 @@ class _TotalRow extends StatelessWidget {
           Text(
             '${value.toStringAsFixed(0)} ج.س',
             style: TextStyle(
-              color: const Color(0xff386641),
+              color: const Color(0xff0e4a35),
               fontSize: isBold ? 17 : 14,
               fontWeight: FontWeight.bold,
               fontFamily: 'Cairo',
@@ -199,20 +200,9 @@ class _CheckoutButton extends StatelessWidget {
         width: double.infinity,
         height: 46,
         child: ElevatedButton.icon(
-          onPressed: isEmpty
-              ? null
-              : () {
-                  controller.checkout();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('تمت عملية البيع بنجاح', style: TextStyle(fontFamily: 'Cairo')),
-                      backgroundColor: Color(0xff386641),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                },
+          onPressed: isEmpty ? null : () => Get.dialog(const PaymentDialog()),
           style: ElevatedButton.styleFrom(
-            backgroundColor: success ? Colors.green : const Color(0xff386641),
+            backgroundColor: success ? Colors.green : const Color(0xff0e4a35),
             disabledBackgroundColor: Colors.grey.shade300,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),

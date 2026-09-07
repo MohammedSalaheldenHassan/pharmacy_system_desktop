@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pharmacy_system/core/mock/models/product_model.dart';
+import 'package:pharmacy_system/data/models/product_model.dart';
 import 'package:pharmacy_system/features/dashboard/presentation/controller/products_controller.dart';
 import 'package:pharmacy_system/features/dashboard/presentation/widgets/product_details_dialog.dart';
 import 'package:pharmacy_system/features/dashboard/presentation/widgets/product_form_dialog.dart';
@@ -85,9 +85,16 @@ class _ProductRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(product.name, style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w600)),
+                  Text(
+                    product.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w600),
+                  ),
                   Text(
                     product.genericName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: Colors.grey.shade500),
                   ),
                 ],
@@ -106,7 +113,14 @@ class _ProductRow extends StatelessWidget {
                 ),
               ),
             ),
-            Expanded(flex: 1, child: Center(child: ProductStatusBadge(status: product.status))),
+            Expanded(
+              flex: 1,
+              child: Center(
+                child: ProductStatusBadge(
+                  status: product.statusFor(Get.find<ProductsController>().lowStockThreshold),
+                ),
+              ),
+            ),
             Expanded(
               flex: 1,
               child: Row(

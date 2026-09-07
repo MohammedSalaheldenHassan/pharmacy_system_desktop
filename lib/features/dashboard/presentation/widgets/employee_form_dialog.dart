@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pharmacy_system/core/mock/mock_employees.dart';
-import 'package:pharmacy_system/core/mock/models/employee_model.dart';
+import 'package:pharmacy_system/core/constant/roles.dart';
+import 'package:pharmacy_system/data/models/employee_model.dart';
 import 'package:pharmacy_system/features/dashboard/presentation/controller/employees_controller.dart';
 
 /// Shared dialog for both adding a new employee and editing an existing one.
@@ -157,8 +157,8 @@ class _EmployeeFormDialogState extends State<EmployeeFormDialog> {
                         child: TextFormField(
                           controller: _password,
                           style: const TextStyle(fontFamily: 'Cairo'),
-                          validator: _required,
-                          decoration: _decoration('كلمة المرور'),
+                          validator: _isEditing ? null : _required,
+                          decoration: _decoration(_isEditing ? 'كلمة المرور (اتركها فارغة لعدم التغيير)' : 'كلمة المرور'),
                         ),
                       ),
                     ],

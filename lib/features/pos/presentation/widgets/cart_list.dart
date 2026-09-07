@@ -91,7 +91,7 @@ class _CartRow extends StatelessWidget {
             child: Text(
               '${item.total.toStringAsFixed(0)} ج.س',
               textAlign: TextAlign.center,
-              style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w600, color: Color(0xff386641)),
+              style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w600, color: Color(0xff0e4a35)),
             ),
           ),
           Expanded(
@@ -126,7 +126,7 @@ class _QtyButton extends StatelessWidget {
         child: SizedBox(
           width: 24,
           height: 24,
-          child: Icon(icon, size: 14, color: const Color(0xff386641)),
+          child: Icon(icon, size: 14, color: const Color(0xff0e4a35)),
         ),
       ),
     );

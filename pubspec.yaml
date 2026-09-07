@@ -35,6 +35,18 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   get: ^4.7.3
+  # Used only for the POS receipt print/preview flow.
+  printing: ^5.13.4
+  pdf: ^3.11.1
+  # Used for the Profit & Loss trend chart.
+  fl_chart: ^0.69.2
+  # Local SQLite database. sqflite_common_ffi backs sqflite on Linux/
+  # Windows/macOS desktop (plain sqflite is mobile-only).
+  sqflite_common_ffi: ^2.3.4+4
+  sqflite: ^2.4.1
+  path: ^1.9.0
+  # Password hashing (SHA-256 + per-user salt) for employee accounts.
+  crypto: ^3.0.6
 
 dev_dependencies:
   flutter_test:

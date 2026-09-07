@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pharmacy_system/core/mock/models/employee_model.dart';
+import 'package:pharmacy_system/data/models/employee_model.dart';
 import 'package:pharmacy_system/features/dashboard/presentation/widgets/employee_status_badge.dart';
 
 class EmployeeDetailsDialog extends StatelessWidget {

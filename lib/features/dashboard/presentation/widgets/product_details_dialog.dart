@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pharmacy_system/core/mock/models/product_model.dart';
+import 'package:pharmacy_system/data/models/product_model.dart';
+import 'package:pharmacy_system/features/dashboard/presentation/controller/products_controller.dart';
 import 'package:pharmacy_system/features/dashboard/presentation/widgets/product_status_badge.dart';
 
 class ProductDetailsDialog extends StatelessWidget {
@@ -29,7 +30,9 @@ class ProductDetailsDialog extends StatelessWidget {
                       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
                     ),
                   ),
-                  ProductStatusBadge(status: product.status),
+                  ProductStatusBadge(
+                    status: product.statusFor(Get.find<ProductsController>().lowStockThreshold),
+                  ),
                 ],
               ),
               const SizedBox(height: 4),

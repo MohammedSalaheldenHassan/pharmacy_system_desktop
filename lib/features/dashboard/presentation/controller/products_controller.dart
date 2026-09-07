@@ -1,12 +1,37 @@
 import 'package:get/get.dart';
-import 'package:pharmacy_system/core/mock/mock_products.dart';
-import 'package:pharmacy_system/core/mock/models/product_model.dart';
+import 'package:pharmacy_system/data/models/product_model.dart';
+import 'package:pharmacy_system/data/repositories/product_repository.dart';
+import 'package:pharmacy_system/features/dashboard/presentation/controller/settings_controller.dart';
 
 class ProductsController extends GetxController {
   static const String allCategoriesLabel = 'كل الفئات';
   static const String allStatusesLabel = 'كل الحالات';
 
-  final RxList<ProductModel> products = <ProductModel>[...mockProducts].obs;
+  final ProductRepository _repository = Get.find<ProductRepository>();
+
+  /// In-memory mirror of the `products` table — every screen reads this
+  /// RxList exactly as before; every mutation below writes through to
+  /// SQLite via [_repository] as well.
+  final RxList<ProductModel> products = <ProductModel>[].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _loadFromDatabase();
+  }
+
+  Future<void> _loadFromDatabase() async {
+    products.assignAll(await _repository.getAll());
+  }
+
+  SettingsController get _settings => Get.isRegistered<SettingsController>()
+      ? Get.find<SettingsController>()
+      : Get.put(SettingsController());
+
+  /// The real, Settings-configurable low-stock threshold — the single
+  /// place every screen should read it from, so it can never drift out of
+  /// sync with what the Settings screen actually shows.
+  int get lowStockThreshold => _settings.settings.value.lowStockThreshold;
 
   final RxString searchQuery = ''.obs;
   final RxString selectedCategory = allCategoriesLabel.obs;
@@ -24,11 +49,15 @@ class ProductsController extends GetxController {
 
   List<ProductModel> get filteredProducts {
     final query = searchQuery.value.trim();
+    // Read unconditionally (not just inside the status-filter branch) so an
+    // Obx wrapping this getter always subscribes to Settings changes, even
+    // with no filter applied and short-circuit evaluation in play below.
+    final threshold = lowStockThreshold;
     return products.where((product) {
       final matchesCategory = selectedCategory.value == allCategoriesLabel ||
           product.category == selectedCategory.value;
       final matchesStatus = selectedStatus.value == allStatusesLabel ||
-          product.status.label == selectedStatus.value;
+          product.statusFor(threshold).label == selectedStatus.value;
       final matchesSearch = query.isEmpty ||
           product.name.contains(query) ||
           product.genericName.toLowerCase().contains(query.toLowerCase()) ||
@@ -60,28 +89,40 @@ class ProductsController extends GetxController {
     required int stock,
     required DateTime expiryDate,
   }) {
-    products.add(
-      ProductModel(
-        id: _generateId(),
-        name: name,
-        genericName: genericName,
-        category: category,
-        barcode: barcode,
-        sellingPrice: sellingPrice,
-        stock: stock,
-        expiryDate: expiryDate,
-      ),
+    final product = ProductModel(
+      id: _generateId(),
+      name: name,
+      genericName: genericName,
+      category: category,
+      barcode: barcode,
+      sellingPrice: sellingPrice,
+      stock: stock,
+      expiryDate: expiryDate,
     );
+    products.add(product);
+    _repository.insert(product);
   }
 
   void updateProduct(ProductModel updated) {
     final index = products.indexWhere((p) => p.id == updated.id);
     if (index != -1) {
       products[index] = updated;
+      _repository.update(updated);
     }
   }
 
   void deleteProduct(String id) {
     products.removeWhere((p) => p.id == id);
+    _repository.delete(id);
+  }
+
+  /// Updates only the in-memory mirror — for callers (Purchases' received-
+  /// order flow) that already persisted the new stock themselves inside
+  /// their own transaction, so this must NOT write to the database again.
+  void applyPersistedUpdate(ProductModel updated) {
+    final index = products.indexWhere((p) => p.id == updated.id);
+    if (index != -1) {
+      products[index] = updated;
+    }
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pharmacy_system/core/mock/models/employee_model.dart';
+import 'package:pharmacy_system/data/models/employee_model.dart';
 import 'package:pharmacy_system/features/dashboard/presentation/controller/employees_controller.dart';
 import 'package:pharmacy_system/features/dashboard/presentation/widgets/employee_details_dialog.dart';
 import 'package:pharmacy_system/features/dashboard/presentation/widgets/employee_form_dialog.dart';
@@ -85,7 +85,12 @@ class _EmployeeRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(employee.name, style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w600)),
+                  Text(
+                    employee.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w600),
+                  ),
                   Text(
                     employee.id,
                     style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: Colors.grey.shade500),
@@ -99,7 +104,7 @@ class _EmployeeRow extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(employee.email, style: const TextStyle(fontFamily: 'Cairo', fontSize: 13)),
+                  Text(employee.email, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontFamily: 'Cairo', fontSize: 13)),
                   Text(
                     employee.phone,
                     style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: Colors.grey.shade500),

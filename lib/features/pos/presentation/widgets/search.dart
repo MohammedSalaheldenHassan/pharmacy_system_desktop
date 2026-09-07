@@ -26,7 +26,7 @@ class Search extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xff386641)),
+            borderSide: const BorderSide(color: Color(0xff0e4a35)),
           ),
           filled: true,
           fillColor: Colors.white,

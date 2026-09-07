@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pharmacy_system/core/mock/models/product_model.dart';
+import 'package:pharmacy_system/data/models/product_model.dart';
 import 'package:pharmacy_system/features/dashboard/presentation/controller/products_controller.dart';
 
 /// Shared dialog for both adding a new product and editing an existing one.

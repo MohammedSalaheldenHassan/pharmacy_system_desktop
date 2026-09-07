@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pharmacy_system/core/mock/models/product_model.dart';
+import 'package:pharmacy_system/data/models/product_model.dart';
 import 'package:pharmacy_system/features/pos/presentation/controller/pos_controller.dart';
 
 class ProductList extends StatelessWidget {
@@ -73,7 +73,7 @@ class _ProductRow extends StatelessWidget {
           Flexible(
             child: Center(
               child: Material(
-                color: const Color(0xff386641),
+                color: const Color(0xff0e4a35),
                 borderRadius: BorderRadius.circular(8),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(8),

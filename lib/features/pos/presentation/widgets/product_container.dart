@@ -111,9 +111,9 @@ class _CategoryFilter extends StatelessWidget {
               ),
               selected: isSelected,
               onSelected: (_) => controller.selectCategory(category),
-              selectedColor: const Color(0xff386641),
+              selectedColor: const Color(0xff0e4a35),
               backgroundColor: Colors.white,
-              side: BorderSide(color: isSelected ? const Color(0xff386641) : Colors.grey.shade300),
+              side: BorderSide(color: isSelected ? const Color(0xff0e4a35) : Colors.grey.shade300),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             );
           });

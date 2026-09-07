@@ -1,16 +1,37 @@
 import 'package:get/get.dart';
-import 'package:pharmacy_system/core/mock/mock_employees.dart';
-import 'package:pharmacy_system/core/mock/models/employee_model.dart';
+import 'package:pharmacy_system/core/constant/default_admin.dart';
+import 'package:pharmacy_system/data/models/employee_model.dart';
+import 'package:pharmacy_system/data/repositories/employee_repository.dart';
 
 class EmployeesController extends GetxController {
   static const String allRolesLabel = 'كل الأدوار';
   static const String allStatusesLabel = 'كل الحالات';
 
-  final RxList<EmployeeModel> employees = <EmployeeModel>[...mockEmployees].obs;
+  final EmployeeRepository _repository = Get.find<EmployeeRepository>();
 
-  final RxString searchQuery = ''.obs;
-  final RxString selectedRole = allRolesLabel.obs;
-  final RxString selectedStatus = allStatusesLabel.obs;
+  /// In-memory mirror of `employees`. Passwords are never populated here
+  /// except transiently right after this session's own add/edit — see
+  /// [EmployeeRepository]'s doc comment.
+  final RxList<EmployeeModel> employees = <EmployeeModel>[].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _loadFromDatabase();
+  }
+
+  Future<void> _loadFromDatabase() async {
+    final stored = await _repository.getAll();
+    if (stored.isEmpty) {
+      // Defensive fallback only — in practice AuthController already
+      // seeds this same single admin account before the Sidebar (and
+      // this controller) ever exists.
+      await _repository.insert(defaultAdminEmployee);
+      employees.assignAll([defaultAdminEmployee]);
+    } else {
+      employees.assignAll(stored);
+    }
+  }
 
   List<String> get roles => [
         allRolesLabel,
@@ -41,6 +62,10 @@ class EmployeesController extends GetxController {
   int get activeCount => employees.where((e) => e.isActive).length;
   int get inactiveCount => employees.where((e) => !e.isActive).length;
 
+  final RxString searchQuery = ''.obs;
+  final RxString selectedRole = allRolesLabel.obs;
+  final RxString selectedStatus = allStatusesLabel.obs;
+
   void updateSearchQuery(String value) => searchQuery.value = value;
 
   void selectRole(String role) => selectedRole.value = role;
@@ -64,32 +89,36 @@ class EmployeesController extends GetxController {
     required String role,
     required DateTime joinDate,
   }) {
-    employees.add(
-      EmployeeModel(
-        id: _generateId(),
-        name: name,
-        username: username,
-        password: password,
-        email: email,
-        phone: phone,
-        role: role,
-        joinDate: joinDate,
-      ),
+    final employee = EmployeeModel(
+      id: _generateId(),
+      name: name,
+      username: username,
+      password: password,
+      email: email,
+      phone: phone,
+      role: role,
+      joinDate: joinDate,
     );
+    employees.add(employee);
+    _repository.insert(employee);
   }
 
+  /// If [updated.password] is empty (the edit form's password field left
+  /// blank), the stored password is left unchanged.
   void updateEmployee(EmployeeModel updated) {
     final index = employees.indexWhere((e) => e.id == updated.id);
     if (index != -1) {
       employees[index] = updated;
+      _repository.update(updated);
     }
   }
 
   void deleteEmployee(String id) {
     employees.removeWhere((e) => e.id == id);
+    _repository.delete(id);
   }
 
   void toggleActive(EmployeeModel employee) {
-    updateEmployee(employee.copyWith(isActive: !employee.isActive));
+    updateEmployee(employee.copyWith(isActive: !employee.isActive, password: ''));
   }
 }

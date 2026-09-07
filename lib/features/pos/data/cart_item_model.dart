@@ -1,4 +1,4 @@
-import 'package:pharmacy_system/core/mock/models/product_model.dart';
+import 'package:pharmacy_system/data/models/product_model.dart';
 
 class CartItemModel {
   final ProductModel product;

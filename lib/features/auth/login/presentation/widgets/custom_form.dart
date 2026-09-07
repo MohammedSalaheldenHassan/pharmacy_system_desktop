@@ -84,8 +84,8 @@ class CustomForm extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: controller.isLoading.value ? null : controller.login,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff386641),
-                  disabledBackgroundColor: const Color(0xff386641).withValues(alpha: 0.6),
+                  backgroundColor: const Color(0xff0e4a35),
+                  disabledBackgroundColor: const Color(0xff0e4a35).withValues(alpha: 0.6),
                   elevation: 0,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
@@ -132,7 +132,7 @@ class CustomForm extends StatelessWidget {
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       border: border(Colors.grey.shade300),
       enabledBorder: border(Colors.grey.shade300),
-      focusedBorder: border(const Color(0xff386641)),
+      focusedBorder: border(const Color(0xff0e4a35)),
       errorBorder: border(Colors.red.shade300),
       focusedErrorBorder: border(Colors.red),
       errorStyle: const TextStyle(fontFamily: 'Cairo', fontSize: 12),

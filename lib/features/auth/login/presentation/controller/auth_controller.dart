@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pharmacy_system/core/mock/mock_employees.dart';
+import 'package:pharmacy_system/core/constant/default_admin.dart';
+import 'package:pharmacy_system/core/constant/roles.dart';
+import 'package:pharmacy_system/data/models/employee_model.dart';
+import 'package:pharmacy_system/data/repositories/employee_repository.dart';
 import 'package:pharmacy_system/features/dashboard/presentation/view/sidebar.dart';
 import 'package:pharmacy_system/features/pos/presentation/view/pos_view.dart';
 
 class AuthController extends GetxController {
   final formKey = GlobalKey<FormState>();
+
+  final EmployeeRepository _employeeRepository = Get.find<EmployeeRepository>();
 
   TextEditingController? username;
   TextEditingController? password;
@@ -13,6 +18,10 @@ class AuthController extends GetxController {
   final RxBool obscurePassword = true.obs;
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
+
+  /// The employee who is currently logged in, so any screen can show the
+  /// real name/role instead of a hardcoded placeholder.
+  final Rxn<EmployeeModel> currentUser = Rxn<EmployeeModel>();
 
   @override
   void onInit() {
@@ -58,6 +67,18 @@ class AuthController extends GetxController {
     return null;
   }
 
+  /// A fresh database starts with no employees at all — this creates the
+  /// one starting admin account ([defaultAdminEmployee]) the first time
+  /// login is attempted, so there's always a way in. Every other table
+  /// stays genuinely empty; this is the sole exception, the same way a
+  /// fresh install needs *some* starting settings row.
+  Future<void> _ensureEmployeesSeeded() async {
+    final existing = await _employeeRepository.getAll();
+    if (existing.isEmpty) {
+      await _employeeRepository.insert(defaultAdminEmployee);
+    }
+  }
+
   Future<void> login() async {
     errorMessage.value = '';
 
@@ -66,20 +87,17 @@ class AuthController extends GetxController {
     }
 
     isLoading.value = true;
+    await _ensureEmployeesSeeded();
     await Future.delayed(const Duration(milliseconds: 500));
     isLoading.value = false;
 
     final enteredUsername = username?.text.trim() ?? '';
     final enteredPassword = password?.text ?? '';
 
-    // Credentials are checked against the centralized mock employee list
-    // (no backend yet); an inactive employee cannot log in.
-    final matches = mockEmployees.where(
-      (employee) =>
-          employee.username == enteredUsername &&
-          employee.password == enteredPassword,
-    );
-    final employee = matches.isEmpty ? null : matches.first;
+    // Verified against the hashed password stored in SQLite — the
+    // plaintext is never compared or stored. An inactive employee cannot
+    // log in even with the correct password.
+    final employee = await _employeeRepository.verifyCredentials(enteredUsername, enteredPassword);
 
     if (employee == null) {
       errorMessage.value = 'اسم المستخدم أو كلمة المرور غير صحيحة';
@@ -89,6 +107,8 @@ class AuthController extends GetxController {
       errorMessage.value = 'هذا الحساب غير نشط، الرجاء مراجعة المسؤول';
       return;
     }
+
+    currentUser.value = employee;
 
     if (employee.role == cashierRole) {
       Get.offAll(() => const PosView());
