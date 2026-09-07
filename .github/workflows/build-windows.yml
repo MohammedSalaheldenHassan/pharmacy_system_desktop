@@ -1,0 +1,60 @@
+name: Build Windows Installer
+
+on:
+  workflow_dispatch: {}
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Enable Windows desktop support
+        run: flutter config --enable-windows-desktop
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build Windows release
+        run: flutter build windows --release
+
+      - name: Verify sqlite3.dll is present
+        shell: pwsh
+        run: |
+          $dllPath = "build\windows\x64\runner\Release\sqlite3.dll"
+          if (Test-Path $dllPath) {
+            Write-Host "sqlite3.dll found: OK"
+          } else {
+            Write-Warning "sqlite3.dll NOT found in Release folder — the installer will still be built, but the app may fail to open the database. Check sqflite_common_ffi packaging."
+          }
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y
+
+      - name: Build installer with Inno Setup
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\pharmacy_system.iss
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PharmacySystem-Windows-Installer
+          path: installer/output/*.exe
+
+      - name: Upload raw Release folder (zip fallback)
+        uses: actions/upload-artifact@v4
+        with:
+          name: PharmacySystem-Windows-RawBuild
+          path: build/windows/x64/runner/Release/
